@@ -34,14 +34,14 @@
 **Terminology:**
 - **Task Title:** The text string entered by the user that describes the task to be done
 - **Submission:** The action of confirming task creation, triggered by pressing Enter or clicking the Add button
-- **Optimistic Update:** Appending the new task to the visible list immediately before the API response returns (optional, improves perceived speed)
+- **Optimistic Update:** Appending the new task to the visible list immediately before the API response returns (required; consistent with F2 and F3 behavior)
 
 **Sub-features:**
 - Text input field for entering a task title
 - Submit via button click (Add / "+" button)
 - Submit via Enter key on the keyboard
 - POST request to backend on submission
-- Newly created task appended to the bottom of the task list immediately
+- Newly created task appended to the bottom of the task list immediately (optimistic update — displayed before API response returns)
 - Input field cleared after successful submission
 
 **Process:**
@@ -49,12 +49,13 @@
 2. User types a task title (non-empty string)
 3. User submits via Enter key or Add button click
 4. Frontend validates that input is not empty or whitespace-only
-5. Frontend sends `POST /api/tasks` with `{ "title": "<user input>" }` to the backend
-6. Backend validates the request body
-7. Backend creates a new task record with `id`, `title`, `completed: false`, and `created_at` timestamp
-8. Backend returns `201 Created` with the created task object
-9. Frontend appends the new task to the task list
-10. Frontend clears the input field and returns focus to it
+5. Frontend immediately appends a pending task item to the task list (optimistic update) and clears the input field and returns focus to it
+6. Frontend sends `POST /api/tasks` with `{ "title": "<user input>" }` to the backend
+7. Backend validates the request body
+8. Backend creates a new task record with `id`, `title`, `completed: false`, and `created_at` timestamp
+9. Backend returns `201 Created` with the created task object
+10. Frontend replaces the pending task item with the confirmed task object (updating with the server-assigned `id` and `created_at`)
+11. If the API call fails, frontend removes the pending task item and shows an inline error; the typed text is restored to the input field
 
 **Inputs:**
 - `title` (string, required): The task description text entered by the user; sourced from the text input field
@@ -90,6 +91,7 @@
 - **Active Task:** A task whose `completed` field is `false`
 - **Completed Task:** A task whose `completed` field is `true`, rendered with a distinct visual style
 - **List State:** The in-memory representation of all tasks currently displayed on the frontend
+- **Sort Order:** Tasks are ordered by `created_at` ascending (oldest first) and maintain their position in the list regardless of completion state changes — toggling a task's completion does not reorder the list
 
 **Sub-features:**
 - Fetch all tasks from the backend on initial page load
@@ -107,7 +109,7 @@
 6. Each list item displays: task title, completion checkbox/toggle, and delete button
 7. Completed tasks are rendered with a visual differentiator (e.g., strikethrough text, muted color)
 8. If the array is empty, a placeholder message is shown (e.g., "No tasks yet. Add one above!")
-9. List state is updated in-memory after each subsequent create, complete, or delete action
+9. List state is updated in-memory after each subsequent create, complete, or delete action; task positions in the list do not change when completion state is toggled — tasks remain at their original `created_at` position
 
 **Inputs:**
 - No user input required for initial load; triggered automatically on page open
@@ -378,7 +380,7 @@ CREATE INDEX IF NOT EXISTS idx_tasks_created_at ON tasks (created_at ASC);
 
 - All API errors return a JSON body in the format `{ "error": { "code": string, "message": string } }`
 - The frontend always displays a user-facing inline message on error — never silently swallows failures
-- On optimistic UI updates (completion toggle, task deletion), if the API call fails the frontend must revert the visual change
+- On optimistic UI updates (task creation, completion toggle, task deletion), if the API call fails the frontend must revert the visual change (remove the pending task for creation failures; restore the prior state for completion and deletion failures)
 
 ### Error Code Reference
 
@@ -395,6 +397,7 @@ CREATE INDEX IF NOT EXISTS idx_tasks_created_at ON tasks (created_at ASC);
 
 ### Frontend Error Display Rules
 - Inline error messages appear near the relevant UI element (e.g., below the input field for creation errors, near the task item for update/delete errors)
+- Each task item manages its own error state independently — if multiple task operations fail simultaneously, each failing task item displays its own inline error message near its own row; messages do not aggregate or replace each other
 - Error messages auto-dismiss after 5 seconds or on next user interaction
 - Failed optimistic updates revert the UI state before showing the error message
 

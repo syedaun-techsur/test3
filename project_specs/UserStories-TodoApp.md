@@ -114,7 +114,7 @@ Users can see all their tasks in a single ordered list immediately upon opening 
 - [ ] All persisted tasks are rendered in the list ordered by creation time (oldest first)
 - [ ] Each task item displays its title and completion status indicator
 - [ ] Each task item displays a delete action control
-- [ ] The list loads and renders within 1 second under normal network conditions
+- [ ] The list loads and renders within 1 second under normal conditions (verified on a local development environment with frontend and backend on the same machine)
 - [ ] No user action (click, scroll, button press) is required to trigger the initial load
 
 **Priority:** P0 | **Feature Ref:** F1
@@ -189,6 +189,7 @@ Users can mark tasks as complete or revert them to active. Completion state is v
 - [ ] A PATCH request is sent to the backend with `{ "completed": true }`
 - [ ] The backend confirms the update with a 200 OK response
 - [ ] The task remains visible in the list after being marked complete (it is not auto-deleted or hidden)
+- [ ] The task does not move position in the list — it stays at its original `created_at` order regardless of completion state
 - [ ] The entire toggle interaction is reachable in ≤ 2 clicks from the list view
 
 **Priority:** P0 | **Feature Ref:** F2

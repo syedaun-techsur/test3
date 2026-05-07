@@ -123,7 +123,7 @@ People need a fast, reliable way to track tasks without the overhead of complex 
 
 | Category | Requirement |
 |---|---|
-| **Performance** | Task list loads within 1 second under normal conditions |
+| **Performance** | Task list loads within 1 second under normal conditions (baseline: local development environment with frontend and backend on the same machine; no artificial network latency) |
 | **Reliability** | Task data is not lost on server restart (durable storage) |
 | **Simplicity** | No authentication, no multi-user isolation, no real-time sync for v1 |
 | **Usability** | All core actions (create, complete, delete) accessible in ≤2 clicks/interactions |
