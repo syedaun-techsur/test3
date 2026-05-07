@@ -27,7 +27,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. `PATCH /api/tasks/:id` toggles a task's completed state and returns the updated object
   4. `DELETE /api/tasks/:id` removes a task and returns 204
   5. Tasks are fully restored (title + completion state) after a server restart
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffold (package.json, deps, directory structure)
+- [ ] 01-02-PLAN.md — Database layer (db.js, SQLite connection singleton + schema init)
+- [ ] 01-03-PLAN.md — REST API (controller, router, server.js — all four CRUD endpoints)
+- [ ] 01-04-PLAN.md — Integration tests (jest + supertest, all endpoints and error cases)
 
 ### Phase 2: Frontend & Integration
 **Goal**: Users can create, view, complete, and delete tasks through a browser UI backed by the Phase 1 API
