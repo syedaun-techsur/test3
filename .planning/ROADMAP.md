@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 ## Phase Details
 
 ### Phase 1: Backend & Storage
-**Status**: In Progress
+**Status**: executing
 **Goal**: A working API server that persists tasks durably and correctly handles all CRUD operations
 **Depends on**: Nothing (first phase)
 **Requirements**: PERS-01
